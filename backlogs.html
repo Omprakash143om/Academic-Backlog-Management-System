@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Backlog Management</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9fc;
+            text-align: center;
+        }
+
+        h2 {
+            margin-top: 20px;
+            font-size: 2.5rem;
+            color: #333;
+        }
+
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        nav ul li {
+            display: inline;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            font-size: 1.2rem;
+            color: #007BFF;
+            padding: 8px 15px;
+            border: 1px solid #007BFF;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+
+        nav ul li a:hover {
+            background-color: #007BFF;
+            color: white;
+        }
+
+        form {
+            background: white;
+            padding: 20px;
+            margin: 20px auto;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 10px;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        form label {
+            display: block;
+            font-weight: bold;
+            margin: 10px 0 5px;
+        }
+
+        form input, form select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        form button {
+            padding: 10px 20px;
+            font-size: 1.2rem;
+            color: white;
+            background-color: #007BFF;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        form button:hover {
+            background-color: #0056b3;
+        }
+
+        table {
+            margin: 20px auto;
+            width: 90%;
+            max-width: 800px;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        table th, table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ccc;
+        }
+
+        table th {
+            background-color: #007BFF;
+            color: white;
+        }
+
+        table tbody tr:nth-child(even) {
+            background-color: #f4f4f9;
+        }
+
+        table tbody tr:hover {
+            background-color: #e0e7ff;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            font-size: 1rem;
+            color: white;
+            background-color: #FF5733;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .delete-btn:hover {
+            background-color: #C70039;
+        }
+    </style>
+</head>
+<body>
+    <h2>Manage Backlogs</h2>
+    <nav>
+        <ul>
+            <li><a href="{{ url_for('index') }}">Home</a></li>
+            <li><a href="{{ url_for('manage_students') }}">Manage Students</a></li>
+            <li><a href="{{ url_for('manage_faculty') }}">Manage Faculty</a></li>
+            <li><a href="{{ url_for('view_backlog_stats') }}">Backlog Statistics</a></li>
+        </ul>
+    </nav>
+    <form id="backlogForm">
+        <label for="backlog_id">Backlog ID:</label>
+        <input type="text" id="backlog_id" placeholder="Enter Backlog ID" required>
+        <label for="student_roll_number">Student Roll Number:</label>
+        <input type="text" id="student_roll_number" placeholder="Enter Student Roll Number" required>
+        <label for="subject_id">Subject ID:</label>
+        <input type="text" id="subject_id" placeholder="Enter Subject ID" required>
+        <label for="exam_date">Exam Date:</label>
+        <input type="date" id="exam_date" required>
+        <label for="status">Status:</label>
+        <select id="status">
+            <option value="Pending">Pending</option>
+            <option value="Cleared">Cleared</option>
+        </select>
+        <button type="submit">Add Backlog</button>
+    </form>
+    <table id="backlogTable">
+        <thead>
+            <tr>
+                <th>Backlog ID</th>
+                <th>Student Roll Number</th>
+                <th>Subject ID</th>
+                <th>Exam Date</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Table rows will be dynamically added here -->
+        </tbody>
+    </table>
+    <script>
+        const form = document.getElementById('backlogForm');
+        const tableBody = document.querySelector('#backlogTable tbody');
+
+        // Load data from local storage
+        const loadBacklogs = () => {
+            const backlogs = JSON.parse(localStorage.getItem('backlogs')) || [];
+            tableBody.innerHTML = '';
+            backlogs.forEach((backlog, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${backlog.backlog_id}</td>
+                    <td>${backlog.student_roll_number}</td>
+                    <td>${backlog.subject_id}</td>
+                    <td>${backlog.exam_date}</td>
+                    <td>${backlog.status}</td>
+                    <td><button class="delete-btn" onclick="deleteBacklog(${index})">Delete</button></td>
+                `;
+                tableBody.appendChild(row);
+            });
+        };
+
+        // Save a new backlog to local storage
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const backlog = {
+                backlog_id: document.getElementById('backlog_id').value,
+                student_roll_number: document.getElementById('student_roll_number').value,
+                subject_id: document.getElementById('subject_id').value,
+                exam_date: document.getElementById('exam_date').value,
+                status: document.getElementById('status').value,
+            };
+
+            const backlogs = JSON.parse(localStorage.getItem('backlogs')) || [];
+            backlogs.push(backlog);
+            localStorage.setItem('backlogs', JSON.stringify(backlogs));
+            form.reset();
+            loadBacklogs();
+        });
+
+        // Delete a specific backlog
+        const deleteBacklog = (index) => {
+            const backlogs = JSON.parse(localStorage.getItem('backlogs')) || [];
+            backlogs.splice(index, 1);
+            localStorage.setItem('backlogs', JSON.stringify(backlogs));
+            loadBacklogs();
+        };
+
+        // Load data on page load
+        window.onload = loadBacklogs;
+    </script>
+</body>
+</html>

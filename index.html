@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academic Backlog Management System</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh; /* Full viewport height */
+            background: linear-gradient(135deg, #6a11cb, #2575fc); /* Gradient background */
+        }
+
+        .container {
+            text-align: center;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2); /* Shadow effect */
+            padding: 40px;
+            width: 90%; /* Responsive width */
+            max-width: 700px; /* Restrict maximum width */
+        }
+
+        h1 {
+            font-size: 4rem; /* Title size */
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 15px; /* Spacing between items */
+        }
+
+        nav ul li {
+            margin: 0;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            font-size: 1.5rem; /* Link size */
+            color: white;
+            padding: 15px 20px;
+            background-color: #007BFF;
+            border-radius: 8px;
+            display: block; /* Make links fill their container */
+            transition: all 0.3s ease; /* Smooth hover effect */
+        }
+
+        nav ul li a:hover {
+            background-color: #0056b3; /* Darker blue on hover */
+            transform: scale(1.05); /* Slightly enlarge on hover */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to Academic Backlog Management System</h1>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('manage_students') }}">Manage Students</a></li>
+                <li><a href="{{ url_for('manage_faculty') }}">Manage Faculty</a></li>
+                <li><a href="{{ url_for('manage_backlogs') }}">Manage Backlogs</a></li>
+                <li><a href="{{ url_for('check_student_backlogs') }}">Check Student Backlogs</a></li>
+                <li><a href="{{ url_for('view_backlog_stats') }}">View Backlog Statistics</a></li>
+            </ul>
+        </nav>
+    </div>
+</body>
+</html>

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check Student Backlogs</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f3f4f9;
+            text-align: center;
+        }
+
+        h2 {
+            margin-top: 20px;
+            font-size: 2.5rem;
+            color: #444;
+        }
+
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        nav ul li {
+            display: inline;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            font-size: 1.2rem;
+            color: #007BFF;
+            padding: 8px 15px;
+            border: 1px solid #007BFF;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+
+        nav ul li a:hover {
+            background-color: #007BFF;
+            color: white;
+        }
+
+        form {
+            background: white;
+            padding: 20px;
+            margin: 20px auto;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 10px;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        form label {
+            display: block;
+            font-weight: bold;
+            margin: 10px 0 5px;
+        }
+
+        form input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        form button {
+            padding: 10px 20px;
+            font-size: 1.2rem;
+            color: white;
+            background-color: #007BFF;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        form button:hover {
+            background-color: #0056b3;
+        }
+
+        table {
+            margin: 20px auto;
+            width: 90%;
+            max-width: 800px;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        table th, table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ccc;
+        }
+
+        table th {
+            background-color: #007BFF;
+            color: white;
+        }
+
+        table tbody tr:nth-child(even) {
+            background-color: #f4f4f9;
+        }
+
+        table tbody tr:hover {
+            background-color: #e0e7ff;
+        }
+
+        #result {
+            margin-top: 20px;
+            font-size: 1.2rem;
+            color: #444;
+        }
+    </style>
+</head>
+<body>
+    <h2>Check Student Backlogs</h2>
+    <nav>
+        <ul>
+            <li><a href="{{ url_for('index') }}">Home</a></li>
+            <li><a href="{{ url_for('manage_students') }}">Manage Students</a></li>
+            <li><a href="{{ url_for('manage_faculty') }}">Manage Faculty</a></li>
+            <li><a href="{{ url_for('manage_backlogs') }}">Manage Backlogs</a></li>
+        </ul>
+    </nav>
+    <form id="studentBacklogForm">
+        <label for="roll_number">Student Roll Number:</label>
+        <input type="text" id="roll_number" placeholder="Enter Roll Number" required>
+        <button type="submit">Check Backlogs</button>
+    </form>
+    <div id="result"></div>
+    <script>
+        const backlogData = {
+            "21691A28B5": "Pending",
+            "21691A28B0": "Cleared",
+            "21691A28B4": "Pending",
+            "21691A28B2": "Pending",
+            "21691A28B1": "Cleared",
+            "21691A28B3": "Cleared",
+            "21691A28B7": "Pending"
+        };
+
+        document.getElementById('studentBacklogForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent the form from refreshing the page
+            const rollNumber = document.getElementById('roll_number').value.trim();
+            const resultDiv = document.getElementById('result');
+
+            if (rollNumber in backlogData) {
+                resultDiv.textContent = `The backlog status for roll number ${rollNumber} is: ${backlogData[rollNumber]}`;
+                resultDiv.style.color = backlogData[rollNumber] === "Cleared" ? "green" : "red";
+            } else {
+                resultDiv.textContent = `No backlog data found for roll number ${rollNumber}.`;
+                resultDiv.style.color = "orange";
+            }
+        });
+    </script>
+</body>
+</html>

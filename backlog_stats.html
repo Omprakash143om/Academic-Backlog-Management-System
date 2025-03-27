@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Backlog Statistics</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f3f4f9;
+            text-align: center;
+        }
+
+        h2 {
+            margin-top: 20px;
+            font-size: 2.5rem;
+            color: #444;
+        }
+
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        nav ul li {
+            display: inline;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            font-size: 1.2rem;
+            color: #007BFF;
+            padding: 8px 15px;
+            border: 1px solid #007BFF;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+
+        nav ul li a:hover {
+            background-color: #007BFF;
+            color: white;
+        }
+
+        #statistics {
+            background: white;
+            padding: 20px;
+            margin: 20px auto;
+            width: 80%;
+            max-width: 800px;
+            border-radius: 10px;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        #statistics h3 {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            color: #444;
+        }
+
+        #statistics p {
+            font-size: 1.2rem;
+            margin: 10px 0;
+            color: #333;
+        }
+
+        .stat-value {
+            font-weight: bold;
+            color: #007BFF;
+        }
+
+        canvas {
+            width: 100%;
+            max-width: 600px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Backlog Statistics</h2>
+    <nav>
+        <ul>
+            <li><a href="{{ url_for('index') }}">Home</a></li>
+            <li><a href="{{ url_for('manage_students') }}">Manage Students</a></li>
+            <li><a href="{{ url_for('manage_faculty') }}">Manage Faculty</a></li>
+            <li><a href="{{ url_for('manage_backlogs') }}">Manage Backlogs</a></li>
+            <li><a href="{{ url_for('check_student_backlogs') }}">Check Student Backlogs</a></li>
+        </ul>
+    </nav>
+    <section id="statistics">
+        <h3>Overall Backlog Summary</h3>
+        <div>
+            <p>Total Students with Backlogs: <span class="stat-value" id="students_with_backlogs">30</span></p>
+            <p>Total Students without Backlogs: <span class="stat-value" id="students_without_backlogs">470</span></p>
+        </div>
+        <div>
+            <h3>Backlog Status Breakdown</h3>
+            <p>Total Backlogs: <span class="stat-value" id="total_backlogs">36</span></p>
+            <p>Cleared Backlogs: <span class="stat-value" id="cleared_backlogs">10</span></p>
+            <p>Pending Backlogs: <span class="stat-value" id="pending_backlogs">26</span></p>
+        </div>
+        <h3>Backlog Status Chart</h3>
+        <canvas id="backlogChart"></canvas>
+    </section>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const ctx = document.getElementById('backlogChart').getContext('2d');
+        const backlogChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: ['Cleared Backlogs', 'Pending Backlogs'],
+                datasets: [{
+                    label: 'Backlog Status',
+                    data: [10, 26],
+                    backgroundColor: ['#4caf50', '#f44336'],
+                    borderColor: ['#388e3c', '#d32f2f'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(tooltipItem) {
+                                return tooltipItem.label + ': ' + tooltipItem.raw + ' Backlogs';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faculty Management</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            text-align: center;
+        }
+
+        h2 {
+            margin-top: 20px;
+            font-size: 2.5rem;
+            color: #333;
+        }
+
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        nav ul li {
+            display: inline;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            font-size: 1.2rem;
+            color: #007BFF;
+            padding: 8px 15px;
+            border: 1px solid #007BFF;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+
+        nav ul li a:hover {
+            background-color: #007BFF;
+            color: white;
+        }
+
+        form {
+            background: white;
+            padding: 20px;
+            margin: 20px auto;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 10px;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        form label {
+            display: block;
+            font-weight: bold;
+            margin: 10px 0 5px;
+        }
+
+        form input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        form button {
+            padding: 10px 20px;
+            font-size: 1.2rem;
+            color: white;
+            background-color: #007BFF;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        form button:hover {
+            background-color: #0056b3;
+        }
+
+        table {
+            margin: 20px auto;
+            width: 90%;
+            max-width: 800px;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        table th, table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ccc;
+        }
+
+        table th {
+            background-color: #007BFF;
+            color: white;
+        }
+
+        table tbody tr:nth-child(even) {
+            background-color: #f4f4f9;
+        }
+
+        table tbody tr:hover {
+            background-color: #e0e7ff;
+        }
+
+        .delete-btn {
+            background-color: #FF5733;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .delete-btn:hover {
+            background-color: #C70039;
+        }
+    </style>
+</head>
+<body>
+    <h2>Manage Faculty</h2>
+    <nav>
+        <ul>
+            <li><a href="{{ url_for('index') }}">Home</a></li>
+            <li><a href="{{ url_for('manage_students') }}">Manage Students</a></li>
+            <li><a href="{{ url_for('manage_backlogs') }}">Manage Backlogs</a></li>
+            <li><a href="{{ url_for('view_backlog_stats') }}">Backlog Statistics</a></li>
+        </ul>
+    </nav>
+    <form id="facultyForm">
+        <label for="faculty_id">Faculty ID:</label>
+        <input type="text" id="faculty_id" placeholder="Enter Faculty ID" required>
+        <label for="name">Name:</label>
+        <input type="text" id="name" placeholder="Enter Full Name" required>
+        <label for="department">Department:</label>
+        <input type="text" id="department" placeholder="Enter Department" required>
+        <label for="email">Email:</label>
+        <input type="email" id="email" placeholder="Enter Email Address" required>
+        <label for="phone_number">Phone Number:</label>
+        <input type="text" id="phone_number" placeholder="Enter Phone Number" required>
+        <button type="submit">Add Faculty</button>
+    </form>
+    <table id="facultyTable">
+        <thead>
+            <tr>
+                <th>Faculty ID</th>
+                <th>Name</th>
+                <th>Department</th>
+                <th>Email</th>
+                <th>Phone Number</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Dynamic Rows Will Be Inserted Here -->
+        </tbody>
+    </table>
+    <script>
+        const form = document.getElementById('facultyForm');
+        const facultyTable = document.getElementById('facultyTable').querySelector('tbody');
+
+        // Load faculty data from local storage on page load
+        window.onload = () => {
+            const facultyList = JSON.parse(localStorage.getItem('facultyList')) || [];
+            facultyList.forEach(faculty => addFacultyToTable(faculty));
+        };
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const facultyId = document.getElementById('faculty_id').value;
+            const name = document.getElementById('name').value;
+            const department = document.getElementById('department').value;
+            const email = document.getElementById('email').value;
+            const phoneNumber = document.getElementById('phone_number').value;
+
+            const faculty = { facultyId, name, department, email, phoneNumber };
+
+            // Save to local storage
+            const facultyList = JSON.parse(localStorage.getItem('facultyList')) || [];
+            facultyList.push(faculty);
+            localStorage.setItem('facultyList', JSON.stringify(facultyList));
+
+            // Add to table
+            addFacultyToTable(faculty);
+
+            // Clear form
+            form.reset();
+        });
+
+        function addFacultyToTable(faculty) {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${faculty.facultyId}</td>
+                <td>${faculty.name}</td>
+                <td>${faculty.department}</td>
+                <td>${faculty.email}</td>
+                <td>${faculty.phoneNumber}</td>
+                <td><button class="delete-btn" onclick="deleteFaculty('${faculty.facultyId}')">Delete</button></td>
+            `;
+            facultyTable.appendChild(row);
+        }
+
+        function deleteFaculty(facultyId) {
+            let facultyList = JSON.parse(localStorage.getItem('facultyList')) || [];
+            facultyList = facultyList.filter(faculty => faculty.facultyId !== facultyId);
+            localStorage.setItem('facultyList', JSON.stringify(facultyList));
+
+            // Reload table
+            facultyTable.innerHTML = '';
+            facultyList.forEach(faculty => addFacultyToTable(faculty));
+        }
+    </script>
+</body>
+</html>
